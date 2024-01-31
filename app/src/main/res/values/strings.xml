@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HW21</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="item_price">12$</string>
+    <string name="item_description">Belt suit blazer</string>
+    <string name="purchase">Purchase</string>
+    <string name="my_items">my items</string>
+    <string name="no_items_found">No Items Found</string>
+</resources>
