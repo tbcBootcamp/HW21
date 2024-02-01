@@ -1,5 +1,6 @@
 package com.example.hw21.data.repository.global
 
+import android.util.Log
 import com.example.hw21.data.global.api.ClothesApi
 import com.example.hw21.data.global.common.HandleResponse
 import com.example.hw21.data.global.common.Resource

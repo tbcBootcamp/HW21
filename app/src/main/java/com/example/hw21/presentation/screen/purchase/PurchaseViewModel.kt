@@ -8,6 +8,8 @@ import com.example.hw21.domain.usecase.AddUserToDataBaseUseCase
 import com.example.hw21.domain.usecase.GetClothesFromApiUseCase
 import com.example.hw21.domain.usecase.GetClothesFromDataBaseUseCase
 import com.example.hw21.presentation.event.ClothesEvent
+import com.example.hw21.presentation.mapper.toDomain
+import com.example.hw21.presentation.mapper.toPresentation
 import com.example.hw21.presentation.model.ClothesUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +36,7 @@ class PurchaseViewModel @Inject constructor(
     }
 
     fun onEvent(event: ClothesEvent) {
-        when(event) {
+        when (event) {
             is ClothesEvent.AddAllClotheToDataBaseEvent -> addAllClothes()
             is ClothesEvent.SelectFavouriteEvent -> selectFavourite(selectedClothes = event.item)
             ClothesEvent.Refresh -> getUsers()
@@ -44,27 +46,42 @@ class PurchaseViewModel @Inject constructor(
     private fun getUsers() {
         viewModelScope.launch {
             getClothesFromApiUseCase().collect {
-                when(it) {
-                    is Resource.Loading -> _usersStateFlow.update { currentState -> currentState.copy(isLoading = it.loading) }
+                when (it) {
+                    is Resource.Loading -> _usersStateFlow.update { currentState ->
+                        currentState.copy(
+                            isLoading = it.loading
+                        )
+                    }
 
                     is Resource.Success -> {
-                        _usersStateFlow.update { currentState -> currentState.copy(clothes = it.response) }
+                        _usersStateFlow.update { currentState -> currentState.copy(clothes = it.response.map { domainModel -> domainModel.toPresentation() }) }
                         addAllClothes()
                     }
 
                     is Resource.Error -> {
-                        if (it.throwable is IOException){
-                            _clothesFlow.collect {clothes ->
+                        if (it.throwable is IOException) {
+                            _clothesFlow.collect { clothes ->
                                 if (clothes.isNotEmpty())
-                                    _usersStateFlow.update { currentState -> currentState.copy(clothes = clothes, isLoading = false) }
+                                    _usersStateFlow.update { currentState ->
+                                        currentState.copy(
+                                            clothes = clothes.map { clothesDomainModel -> clothesDomainModel.toPresentation() },
+                                            isLoading = false
+                                        )
+                                    }
                                 else
-                                    _usersStateFlow.update { clothesState -> clothesState.copy(errorMessage = R.string.no_items_found.toString(), isLoading = false) }
+                                    _usersStateFlow.update { clothesState ->
+                                        clothesState.copy(
+                                            errorMessage = R.string.no_items_found.toString(),
+                                            isLoading = false
+                                        )
+                                    }
 
                             }
                         } else {
                             _usersStateFlow.update { currentState -> currentState.copy(errorMessage = it.message) }
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -73,13 +90,13 @@ class PurchaseViewModel @Inject constructor(
 
     private fun addAllClothes() {
         viewModelScope.launch {
-            addUserUseCase(_usersStateFlow.value.clothes!!)
+            addUserUseCase(_usersStateFlow.value.clothes!!.map { it.toDomain() })
         }
     }
 
     private fun addSingleClothes(selectedClothes: ClothesUiModel) {
         viewModelScope.launch {
-            addUserUseCase(listOf(selectedClothes))
+            addUserUseCase(listOf(selectedClothes.toDomain()))
         }
     }
 
