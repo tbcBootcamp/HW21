@@ -6,5 +6,6 @@ data class ClothesUiModel(
     val cover: String,
     val price: String,
     val title: String,
-    var favorite: Boolean
+    var favorite: Boolean,
+    val category: String
 )

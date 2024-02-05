@@ -9,5 +9,6 @@ data class ClothesEntity(
     val cover: String,
     val price: String,
     val title: String,
-    val favourite: Boolean
+    val favourite: Boolean,
+    val category: String
 )

@@ -1,6 +1,5 @@
 package com.example.hw21.data.repository.global
 
-import android.util.Log
 import com.example.hw21.data.global.api.ClothesApi
 import com.example.hw21.data.global.common.HandleResponse
 import com.example.hw21.data.global.common.Resource
@@ -18,6 +17,9 @@ class GlobalClothesRepositoryImpl @Inject constructor(
 
     override suspend fun getClothes(): Flow<Resource<List<ClothesDomainModel>>> =
         handleResponse.safeApiCall {
+//            val list = clothesApiService.getClothes().body()
+//            val categories = list?.map { it.category }?.toMutableSet()
+//            categories?.add("all")
             clothesApiService.getClothes()
         }.asResource { clothes ->
             clothes.map { it.toDomain() }

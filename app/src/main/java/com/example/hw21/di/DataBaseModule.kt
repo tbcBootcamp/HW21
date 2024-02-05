@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.hw21.data.local.dao.ClothesDao
 import com.example.hw21.data.local.database.AppDatabase
+import com.example.hw21.data.local.database.migration1to2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +19,9 @@ object DataBaseModule {
     @Provides
     @Singleton
     fun provideAppDataBase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "clothes_database").build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "clothes_database")
+            .addMigrations(migration1to2).build()
+
     }
 
     @Provides
